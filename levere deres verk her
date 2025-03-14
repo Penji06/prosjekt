@@ -1,1 +1,52 @@
+import matplotlib.pyplot as plt #brukes til å lage grafer og visualiseringer.
+import csv #brukes til å lese data fra en CSV-fil.
 
+filnavn = "Kapitel3/prosjekt/kjønn.csv"
+
+# Lister for lagring av data
+aar = [] #En tom liste som skal lagre årstallene fra CSV-filen.
+data = {'kvinner': [], 'menn': []} #En dictionary med to tomme lister – én for kvinner og én for menn.
+
+# Åpne filen og lese data
+with open(filnavn, 'r', encoding='utf-8-sig') as fil: #"r" åpner CSV-filen for lesning
+    filinnhold = csv.reader(fil, delimiter=';') # csv.readerbrukes til å lese filinholdet, der  fil delimiter agir at semikolon skiller kolonnene
+    next(filinnhold)  # Hopper over overskriftsraden
+    for rad in filinnhold: #Løkken for rad in filinnhold: går gjennom hver rad i CSV-filen.
+        aar.append(int(rad[0]))  # Legger til årstall
+        for i, kategori in enumerate(data.keys()): #Bruker enumerate(data.keys()) for å få indeks (i) og kategori (kvinner/menn).
+            data[kategori].append(float(rad[i+1]))  # Gjør om til float
+
+# Plotte dataene for hver kategori
+plt.figure(figsize=(12, 6)) #Oppretter en ny figur med en spesifikk størrelse.
+
+# Liste med farger
+farger = ['blue', 'red']
+
+# Plotting
+for (kategori, verdier), farge in zip(data.items(), farger): #zip(data.items(), farger) kobler sammen kategorier (kvinner/menn) med farger.
+    plt.plot(aar, verdier, label=kategori, color=farge, linewidth=2)
+    #X-akse: aar (årstallene).
+    #Y-akse: verdier (antall personer for kvinner/menn).
+    #label=kategori: Legger til riktig navn i legenden.
+    #color=farge: Setter fargen for hver linje.
+    #linewidth=2: Gjør linjene tykkere for bedre synlighet.
+
+
+# Legg til tittel og akse-etiketter
+plt.title("Forskjellen i antall personer mellom kjønn (2000-2025)")
+plt.xlabel("År")
+plt.ylabel("Antall personer")
+plt.grid(axis="y", linestyle="--")  # Kan også bare være plt.grid(True) 
+#Legger til rutenett kun langs Y-aksen (axis="y").
+#Bruker stiplet linje (linestyle="--") for bedre lesbarhet.
+
+
+# Tilpass akser
+plt.xticks(aar[::2])  # Viser bare hvert andre år på X-aksen
+plt.yticks(range(0, 200001, 20000))  # Y-aksen går fra 0 til 200 000 med steg på 20 000
+
+# Legende
+plt.legend(loc='upper left')# Plasserer legenden øverst til venstre
+
+plt.tight_layout()# Justerer layouten for å unngå overlappende tekst
+plt.show()# Viser grafen
